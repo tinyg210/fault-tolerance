@@ -1,5 +1,6 @@
 package org.tinyg.service;
 
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.tinyg.model.Container;
 import org.tinyg.model.ContainerLoad;
 import org.tinyg.model.ContainerType;
@@ -10,12 +11,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ShipmentRepoService {
 
     private HashMap<String, Shipment> shipments;
+
+    private AtomicLong counter = new AtomicLong(0);
 
     public ShipmentRepoService() {
         shipments = new HashMap<>();
@@ -43,9 +47,22 @@ public class ShipmentRepoService {
         return new ArrayList<>(shipments.values());
     }
 
+    @CircuitBreaker(
+            requestVolumeThreshold = 4,
+            failureRatio = 0.5,
+            delay = 100000
+    )
     public List<String> getValidTrackingIds() {
+        maybeFail();
         return shipments.values().stream().filter(shipment ->
                 LocalDate.now().compareTo(shipment.getArrivalDate()) <= 0).map(Shipment::getTrackingId).collect(Collectors.toList());
+    }
+
+    private void maybeFail() {
+        final Long invocationNumber = counter.getAndIncrement();
+        if (invocationNumber % 4 > 1) { // alternate 2 successful and 2 failing invocations
+            throw new RuntimeException("Service failed.");
+        }
     }
 
 }

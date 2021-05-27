@@ -52,16 +52,10 @@ public class ShipmentEndpoint {
     @GET
     @Path("/valid")
     @Produces(MediaType.TEXT_PLAIN)
-    @CircuitBreaker(
-            requestVolumeThreshold = 4,
-            failureRatio = 0.5,
-            delay = 3000
-    )
     public List<String> getValidShipments() {
         final Long invocationNumber = counter.getAndIncrement();
 
         try {
-            maybeFail();
             LOGGER.infof("#%d invocation returning successfully.Shipments that are still out in transit are being displayed", invocationNumber);
             return shipmentRepoService.getValidTrackingIds();
         } catch (RuntimeException e) {
@@ -70,13 +64,6 @@ public class ShipmentEndpoint {
             return Collections.emptyList();
         }
 
-    }
-
-    private void maybeFail() {
-        final Long invocationNumber = counter.getAndIncrement();
-        if (invocationNumber % 4 > 1) { // alternate 2 successful and 2 failing invocations
-            throw new RuntimeException("Service failed.");
-        }
     }
 
     private void extraInformationProcessing() {
