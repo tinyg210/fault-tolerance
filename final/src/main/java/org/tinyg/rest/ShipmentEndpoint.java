@@ -1,5 +1,6 @@
 package org.tinyg.rest;
 
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.jboss.logging.Logger;
 import org.tinyg.exception.UnexpectedProcessingException;
 import org.tinyg.model.Shipment;
@@ -10,7 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.nio.channels.ConnectionPendingException;
+import javax.xml.ws.http.HTTPException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +25,12 @@ public class ShipmentEndpoint {
     ShipmentRepoService shipmentRepoService;
 
     @GET
+    @Retry(
+            retryOn = HTTPException.class, // or maybe a specific http exception
+            maxRetries = 5,
+            abortOn = UnexpectedProcessingException.class, // could also be http status codes that you generally don't retry, some 4xx, 5xx, 3xx, etc
+            delay = 500
+    )
     @Produces(MediaType.APPLICATION_JSON)
     public List<Shipment> shipments() {
         try {
@@ -46,7 +53,7 @@ public class ShipmentEndpoint {
     private void extraInformationProcessing() {
         if (new Random().nextInt(50) % 2 == 0) {
             LOGGER.error("The required information could not be retrieved right now.Try again.");
-            throw new ConnectionPendingException();
+            throw new HTTPException(408);  //408 request timeout
         }
         if (40 <= new Random().nextInt(50)) {
             LOGGER.error(String.format("Something went wrong here at %s", LOGGER.getName()));

@@ -10,6 +10,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.ws.http.HTTPException;
 import java.nio.channels.ConnectionPendingException;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,7 @@ public class ShipmentEndpoint {
             extraInformationProcessing();
             LOGGER.info("Information fetched successfully.");
             return shipmentRepoService.getAllShipments();
-        } catch (UnexpectedProcessingException exception) {
+        } catch (UnexpectedProcessingException exception) { //we'll catch it like responsible devs
             LOGGER.error(exception.getMessage());
             return Collections.emptyList();
         }
@@ -46,7 +47,7 @@ public class ShipmentEndpoint {
     private void extraInformationProcessing() {
         if (new Random().nextInt(50) % 2 == 0) {
             LOGGER.error("The required information could not be retrieved right now.Try again.");
-            throw new ConnectionPendingException();
+            throw new HTTPException(408);  //408 request timeout
         }
         if (40 <= new Random().nextInt(50)) {
             LOGGER.error(String.format("Something went wrong here at %s", LOGGER.getName()));
