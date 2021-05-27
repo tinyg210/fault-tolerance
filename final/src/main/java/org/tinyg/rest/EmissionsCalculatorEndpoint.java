@@ -1,5 +1,6 @@
 package org.tinyg.rest;
 
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
@@ -24,7 +25,8 @@ public class EmissionsCalculatorEndpoint {
     @GET
     @Path("/{trackingId}")
     @Timeout(2500)
-    public String calculateEmissions(@PathParam String trackingId) {
+    @Fallback(fallbackMethod = "genericInformationAboutCO2")
+    public String calculateEmissions(@PathParam final String trackingId) {
         long started = System.currentTimeMillis();
         final long invocation = attempts.getAndIncrement();
 
@@ -43,6 +45,10 @@ public class EmissionsCalculatorEndpoint {
 
     private void delay() throws InterruptedException {
         Thread.sleep(new Random().nextInt(5000));
+    }
+
+    private String genericInformationAboutCO2(final String trackingId) {
+        return "An average consumption of 4,2 kg / 100 km corresponds to 4,2 kg x 2666 g/kg = 112 g of CO2/km.";
     }
 }
 

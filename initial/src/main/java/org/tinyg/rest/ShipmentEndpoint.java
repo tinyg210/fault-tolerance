@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@Path("/shipment")
+@Path("/shipments")
 public class ShipmentEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ShipmentEndpoint.class);
@@ -38,7 +38,7 @@ public class ShipmentEndpoint {
     }
 
     @GET
-    @Path("/trackingids")
+    @Path("/valid")
     @Produces(MediaType.TEXT_PLAIN)
     public List<String> getValidShipments() {
         return shipmentRepoService.getValidTrackingIds();
