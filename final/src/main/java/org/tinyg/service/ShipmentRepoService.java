@@ -49,16 +49,16 @@ public class ShipmentRepoService {
 
     @CircuitBreaker(
             requestVolumeThreshold = 4,
-            failureRatio = 0.5,
-            delay = 100000
+            failureRatio = 1/2,
+            delay = 10000
     )
     public List<String> getValidTrackingIds() {
-        maybeFail();
+        possibleFail();
         return shipments.values().stream().filter(shipment ->
                 LocalDate.now().compareTo(shipment.getArrivalDate()) <= 0).map(Shipment::getTrackingId).collect(Collectors.toList());
     }
 
-    private void maybeFail() {
+    private void possibleFail() {
         final Long invocationNumber = counter.getAndIncrement();
         if (invocationNumber % 4 > 1) { // alternate 2 successful and 2 failing invocations
             throw new RuntimeException("Service failed.");

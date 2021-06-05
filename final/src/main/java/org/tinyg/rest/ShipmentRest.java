@@ -1,6 +1,5 @@
 package org.tinyg.rest;
 
-import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.jboss.logging.Logger;
 import org.tinyg.exception.UnexpectedProcessingException;
@@ -12,7 +11,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.ws.http.HTTPException;
 import java.util.Collections;
 import java.util.List;
@@ -20,9 +18,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Path("/shipments")
-public class ShipmentEndpoint {
+public class ShipmentRest {
 
-    private static final Logger LOGGER = Logger.getLogger(ShipmentEndpoint.class);
+    private static final Logger LOGGER = Logger.getLogger(ShipmentRest.class);
 
     @Inject
     ShipmentRepoService shipmentRepoService;

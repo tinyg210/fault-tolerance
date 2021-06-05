@@ -13,12 +13,12 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Path("/emissions")
-public class EmissionsCalculatorEndpoint {
+public class EmissionsCalculatorRest {
 
     @Inject
     EmissionsCalculatorService emissionsCalculatorService;
 
-    private static final Logger LOGGER = Logger.getLogger(EmissionsCalculatorEndpoint.class);
+    private static final Logger LOGGER = Logger.getLogger(EmissionsCalculatorRest.class);
 
     AtomicLong attempts = new AtomicLong(1);
 
