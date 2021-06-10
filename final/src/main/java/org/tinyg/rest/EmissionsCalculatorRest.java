@@ -48,7 +48,7 @@ public class EmissionsCalculatorRest {
     }
 
     private String genericInformationAboutCO2(final String trackingId) {
-        return "An average consumption of 4,2 kg / 100 km corresponds to 4,2 kg x 2666 g/kg = 112 g of CO2/km.";
+        return emissionsCalculatorService.genericInformationAboutCO2(trackingId);
     }
 }
 

@@ -12,7 +12,7 @@ public class Container {
 
     private Long id;
 
-    private Shipment shipment;
+    private Transport transport;
     private List<ContainerLoad> containerLoad = new ArrayList<>();
     private ContainerType type;
     private String serialNumber;

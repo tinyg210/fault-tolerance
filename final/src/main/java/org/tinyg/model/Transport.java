@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Setter
 @Getter
-public class Shipment {
+public class Transport {
 
     private Long id;
 
@@ -19,7 +19,7 @@ public class Shipment {
     private LocalDate departureDate;
     private LocalDate arrivalDate;
 
-    public Shipment(final Long id, final String trackingId, final LocalDate departureDate, final LocalDate arrivalDate) {
+    public Transport(final Long id, final String trackingId, final LocalDate departureDate, final LocalDate arrivalDate) {
         this.containers = new HashSet<>();
         this.id = id;
         this.trackingId = trackingId;

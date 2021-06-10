@@ -2,9 +2,9 @@ package org.tinyg.rest;
 
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.jboss.logging.Logger;
-import org.tinyg.exception.UnexpectedProcessingException;
-import org.tinyg.model.Shipment;
-import org.tinyg.service.ShipmentRepoService;
+import org.tinyg.exception.KnownProcessingException;
+import org.tinyg.model.Transport;
+import org.tinyg.service.TransportService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Path("/shipments")
-public class ShipmentRest {
+@Path("/transports")
+public class TransportRest {
 
-    private static final Logger LOGGER = Logger.getLogger(ShipmentRest.class);
+    private static final Logger LOGGER = Logger.getLogger(TransportRest.class);
 
     @Inject
-    ShipmentRepoService shipmentRepoService;
+    TransportService transportService;
 
     private AtomicLong counter = new AtomicLong(0);
 
@@ -32,16 +32,16 @@ public class ShipmentRest {
     @Retry(
             retryOn = HTTPException.class, // or maybe a specific http exception
             maxRetries = 5,
-            abortOn = UnexpectedProcessingException.class, // could also be http status codes that you generally don't retry, some 4xx, 5xx, 3xx, etc
+            abortOn = KnownProcessingException.class, // could also be http status codes that you generally don't retry, some 4xx, 5xx, 3xx, etc
             delay = 500
     )
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Shipment> shipments() {
+    public List<Transport> transports() {
         try {
             extraInformationProcessing();
             LOGGER.info("Information fetched successfully.");
-            return shipmentRepoService.getAllShipments();
-        } catch (UnexpectedProcessingException exception) {
+            return transportService.getAllTransports();
+        } catch (KnownProcessingException exception) {
             LOGGER.error(exception.getMessage());
             return Collections.emptyList();
         }
@@ -50,15 +50,17 @@ public class ShipmentRest {
     @GET
     @Path("/valid")
     @Produces(MediaType.TEXT_PLAIN)
-    public List<String> getValidShipments() {
+    public List<String> getValidTransports() {
         final Long invocationNumber = counter.getAndIncrement();
 
         try {
-            LOGGER.infof("#%d invocation returning successfully.Shipments that are still out in transit are being displayed", invocationNumber);
-            return shipmentRepoService.getValidTrackingIds();
+            LOGGER.infof("#%d invocation returning successfully.Transports that are still out in transit are being " +
+                    "displayed", invocationNumber);
+            return transportService.getValidTrackingIds();
         } catch (RuntimeException e) {
             String message = e.getClass().getSimpleName() + ": " + e.getMessage();
-            LOGGER.errorf("Can not fetch shipments that are still in transit.Invocation #%d failed: %s", invocationNumber, message);
+            LOGGER.errorf("Can not fetch transports that are still in transit.Invocation #%d failed: %s",
+                    invocationNumber, message);
             return Collections.emptyList();
         }
 
@@ -71,7 +73,7 @@ public class ShipmentRest {
         }
         if (40 <= new Random().nextInt(50)) {
             LOGGER.error(String.format("Something went wrong here at %s", LOGGER.getName()));
-            throw new UnexpectedProcessingException();
+            throw new KnownProcessingException();
         }
     }
 
