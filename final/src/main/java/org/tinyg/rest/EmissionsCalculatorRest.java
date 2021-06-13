@@ -19,6 +19,7 @@ public class EmissionsCalculatorRest {
     EmissionsCalculatorService emissionsCalculatorService;
 
     private static final Logger LOGGER = Logger.getLogger(EmissionsCalculatorRest.class);
+    public static final Random RANDOM = new Random();
 
     AtomicLong attempts = new AtomicLong(1);
 
@@ -44,7 +45,7 @@ public class EmissionsCalculatorRest {
     }
 
     private void delay() throws InterruptedException {
-        Thread.sleep(new Random().nextInt(5000));
+        Thread.sleep(RANDOM.nextInt(5000));
     }
 
     private String genericInformationAboutCO2(final String trackingId) {

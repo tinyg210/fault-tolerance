@@ -21,6 +21,8 @@ import java.util.Random;
 public class TransportRest {
 
     private static final Logger LOGGER = Logger.getLogger(TransportRest.class);
+    private static final Random RANDOM = new Random();
+
 
     @Inject
     TransportService transportService;
@@ -58,11 +60,11 @@ public class TransportRest {
     }
 
     private void extraInformationProcessing() {
-        if (new Random().nextInt(50) % 2 == 0) {
+        if (RANDOM.nextInt(50) % 2 == 0) {
             LOGGER.error("The required information could not be retrieved right now.Try again.");
             throw new HTTPException(408);  //408 request timeout
         }
-        if (40 <= new Random().nextInt(50)) {
+        if (40 <= RANDOM.nextInt(50)) {
             LOGGER.error(String.format("Something went wrong here at %s", LOGGER.getName()));
             throw new KnownProcessingException();
         }

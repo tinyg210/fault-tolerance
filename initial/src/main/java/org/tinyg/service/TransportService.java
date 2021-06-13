@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class TransportService {
 
     private static final Logger LOGGER = Logger.getLogger(TransportService.class);
+    private static final Random RANDOM = new Random();
 
     private TransportRepo transports;
 
@@ -49,11 +50,11 @@ public class TransportService {
     private void extraValidationOrProcessing() {
         // let's pretend there's a call to a different user service to check status/association with transports'
         // companies, etc
-        if (new Random().nextInt(50) % 2 == 0) {
+        if (RANDOM.nextInt(50) % 2 == 0) {
             LOGGER.error("The required information could not be retrieved right now.Try again.");
             throw new HTTPException(408);  //408 request timeout
         }
-        if (40 <= new Random().nextInt(50)) {
+        if (40 <= RANDOM.nextInt(50)) {
             LOGGER.error(String.format("Something went wrong here at %s", LOGGER.getName()));
             throw new KnownProcessingException();
         }
