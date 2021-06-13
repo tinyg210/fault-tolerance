@@ -1,6 +1,7 @@
 package org.tinyg.service;
 
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.jboss.logging.Logger;
 import org.tinyg.dao.TransportRepo;
 import org.tinyg.model.Transport;
@@ -35,6 +36,8 @@ public class TransportService {
             failureRatio = 1 / 2,
             delay = 10000
     )
+   // @Fallback(CircuitBreakerFallback.class)
+
     public List<String> getValidTrackingIds() {
         final Long invocationNumber = counter.getAndIncrement();
         try {
